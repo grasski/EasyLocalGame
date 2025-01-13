@@ -6,7 +6,6 @@ import com.dabi.easylocalgame.payloadUtils.data.ClientPayloadType
 import com.dabi.easylocalgame.payloadUtils.data.ServerPayloadType
 import com.dabi.easylocalgame.payloadUtils.fromClientPayload
 import com.dabi.easylocalgame.payloadUtils.toServerPayload
-import com.dabi.easylocalgame.serverSide.data.IGameEvents
 import com.dabi.easylocalgame.serverSide.data.ServerConfiguration
 import com.dabi.easylocalgame.serverSide.data.ServerState
 import com.dabi.easylocalgame.serverSide.data.ServerStatusEnum
@@ -35,9 +34,10 @@ abstract class ServerViewmodelTemplate(
      *  but you can use it however you want.
      */
     abstract fun clientAction(clientAction: ClientAction)
-    val serverManager = ServerManager(connectionsClient, this::clientAction)
+    val serverManager: ServerManager by lazy {
+        ServerManager(connectionsClient, this::clientAction)
+    }
 
-    abstract fun onGameEvent(event: IGameEvents)
 }
 
 
@@ -63,6 +63,9 @@ class ServerManager(
         }
 
         this.serverConfiguration = serverConfiguration
+        _serverState.update { it.copy(
+            serverType = this.serverConfiguration.serverType
+        ) }
         startAdvertising(packageName)
     }
     fun closeServer(){
@@ -83,7 +86,7 @@ class ServerManager(
 
     private fun clientConnected(endpointID: String){
         if (_serverState.value.connectedClients.size >= serverConfiguration.maximumConnections){
-            Log.e("", "Reached maximum connections!")
+            Log.e("ServerManager.kt", "Reached maximum connections!")
 
             val payload = toServerPayload(ServerPayloadType.ROOM_IS_FULL, null)
             sendPayload(endpointID, payload)
@@ -130,13 +133,13 @@ class ServerManager(
 
         connectionsClient.startAdvertising(serverConfiguration.serverAsPlayerName, packageName, connectionLifecycleCallback, advertisingOptions)
             .addOnSuccessListener {
-                Log.e("", "SERVER ADVERTISING READY")
+                Log.e("ServerManager.kt", "SERVER ADVERTISING READY")
                 _serverState.update { it.copy(
                     serverStatus = ServerStatusEnum.ADVERTISING
                 ) }
             }
             .addOnFailureListener {
-                Log.e("", "SERVER ADVERTISING FAILURE")
+                Log.e("ServerManager.kt", "SERVER ADVERTISING FAILURE")
                 _serverState.update { it.copy(
                     serverStatus = ServerStatusEnum.ADVERTISING_FAILED
                 ) }
@@ -156,20 +159,19 @@ class ServerManager(
             when (resolution.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     clientConnected(endpointId)
-                    Log.i("ServerManager.onConnectionResult.OK", "SERVER ConnectionsStatusCodes.STATUS_OK " + endpointId)
                 }
                 else -> {
                     _serverState.update { it.copy(
                         serverStatus = ServerStatusEnum.ADVERTISING_FAILED
                     ) }
-                    Log.e("ServerManager.onConnectionResult.ELSE", "SERVER status code ${resolution.status.statusCode}: ${resolution.status.statusMessage}")
+                    Log.e("ServerManager.kt", "SERVER status code ${resolution.status.statusCode}: ${resolution.status.statusMessage}")
                 }
             }
         }
 
         override fun onDisconnected(endpointId: String) {
             clientDisconnected(endpointId)
-            Log.i("ServerManager.onDisconnected", "SERVER $endpointId disconnected")
+            Log.e("ServerManager.kt", "SERVER: $endpointId disconnected")
         }
     }
 
@@ -192,8 +194,6 @@ class ServerManager(
             }
         }
 
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
-//            Log.e("", "SERVER onPayloadTransferUpdate")
-        }
+        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) { }
     }
 }

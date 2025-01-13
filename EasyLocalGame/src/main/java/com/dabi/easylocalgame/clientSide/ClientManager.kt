@@ -37,7 +37,10 @@ abstract class PlayerViewmodelTemplate(
      *  but you can use it however you want.
      */
     abstract fun serverAction(serverAction: ServerAction)
-    val clientManager = ClientManager(connectionsClient, this::serverAction)
+    val clientManager: ClientManager by lazy {
+        ClientManager(connectionsClient, this::serverAction)
+    }
+//    val clientManager = ClientManager(connectionsClient, this::serverAction)
 }
 
 
@@ -80,7 +83,7 @@ class ClientManager(
     }
 
     fun disconnect(){
-        _clientState.update { ClientState(connectionStatus = ConnectionStatusEnum.DISCONNECTED).copy() }
+        _clientState.update { it.copy(connectionStatus = ConnectionStatusEnum.DISCONNECTED) }
 
         connectionsClient.disconnectFromEndpoint(clientState.value.serverID)
         connectionsClient.stopDiscovery()
@@ -100,13 +103,13 @@ class ClientManager(
 
         connectionsClient.startDiscovery(packageName, endpointDiscoveryCallback(nickname), discoveryOptions)
             .addOnSuccessListener {
-                Log.e("", "CLIENT DISCOVERY READY")
+                Log.e("ClientManager.kt", "CLIENT DISCOVERY READY")
                 _clientState.update { it.copy(
                     connectionStatus = ConnectionStatusEnum.CONNECTING
                 ) }
             }
             .addOnFailureListener {
-                Log.e("", "CLIENT DISCOVERY FAILURE " + it.message)
+                Log.e("ClientManager.kt", "CLIENT DISCOVERY FAILURE " + it.message)
                 _clientState.update { it.copy(
                     connectionStatus = ConnectionStatusEnum.CONNECTING_FAILED
                 ) }
@@ -116,16 +119,16 @@ class ClientManager(
     private val endpointDiscoveryCallback: (String) -> EndpointDiscoveryCallback = { nickname ->
         object : EndpointDiscoveryCallback() {
             override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-                Log.e("", "CLIENT $nickname is requesting connection on: ${info.endpointName} + $endpointId")
+                Log.e("ClientManager.kt", "CLIENT $nickname is requesting connection on: ${info.endpointName} + $endpointId")
 
                 connectionsClient.requestConnection(
                     nickname,
                     endpointId,
                     connectionLifecycleCallback
                 ).addOnSuccessListener {
-                    Log.e("", "CLIENT Successfully requested a connection")
+                    Log.e("ClientManager.kt", "CLIENT Successfully requested a connection")
                 }.addOnFailureListener {
-                    Log.e("", "CLIENT Failed to request the connection")
+                    Log.e("ClientManager.kt", "CLIENT Failed to request the connection")
                     _clientState.update { it.copy(
                         connectionStatus = ConnectionStatusEnum.CONNECTING_FAILED
                     ) }
@@ -136,7 +139,7 @@ class ClientManager(
                 _clientState.update { it.copy(
                     connectionStatus = ConnectionStatusEnum.ENDPOINT_LOST
                 ) }
-                Log.e("", "CLIENT onEndpointLost " + endpointId)
+                Log.e("ClientManager.kt", "CLIENT onEndpointLost " + endpointId)
             }
         }
     }
@@ -155,7 +158,6 @@ class ClientManager(
                     ) }
 
                     establishConnection()
-                    Log.e("", "CLIENT ConnectionsStatusCodes.STATUS_OK " + endpointId)
                 }
                 else -> {
                     if (resolution.status.statusCode == ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED){
@@ -167,7 +169,7 @@ class ClientManager(
                             connectionStatus = ConnectionStatusEnum.CONNECTING_FAILED
                         ) }
                     }
-                    Log.e("", "CLIENT status code ${resolution.status.statusCode}: ${resolution.status.statusMessage}")
+                    Log.e("ClientManager.kt", "CLIENT status code ${resolution.status.statusCode}: ${resolution.status.statusMessage}")
                 }
             }
         }
@@ -176,7 +178,6 @@ class ClientManager(
             _clientState.update { it.copy(
                 connectionStatus = ConnectionStatusEnum.DISCONNECTED
             ) }
-            Log.e("", "CLIENT $endpointId disconnected")
         }
     }
 
@@ -211,8 +212,6 @@ class ClientManager(
             }
         }
 
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
-            Log.e("", "CLIENT onPayloadTransferUpdate")
-        }
+        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) { }
     }
 }

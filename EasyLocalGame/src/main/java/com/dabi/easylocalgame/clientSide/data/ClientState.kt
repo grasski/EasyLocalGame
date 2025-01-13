@@ -21,7 +21,7 @@ data class ClientState(
  * - [ROOM_IS_FULL]: The room is full.
  * - [CONNECTED]: The connection was successful.
  * - [CONNECTION_ESTABLISHED]: The connection was established after [CONNECTED]. The client sent their information from [IPlayerConnectionState] to the server.
- * - [DISCONNECTED]: The connection was closed - you can use it for example to change from Game view to Menu view.
+ * - [DISCONNECTED]: The connection was closed - you can use it for example to change view from Game to Menu or landing page.
  */
 enum class ConnectionStatusEnum{
     NONE,

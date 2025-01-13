@@ -15,7 +15,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.dabi"
                 artifactId = "easylocalgame"
-                version = "0.0.1"
+                version = "0.0.2"
             }
         }
     }

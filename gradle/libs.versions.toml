@@ -1,5 +1,6 @@
 [versions]
 agp = "8.6.1"
+easylocalgame = "v0.0.1"
 kotlin = "2.0.0"
 
 ksp = "2.0.0-1.0.22"
@@ -37,6 +38,8 @@ material = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+
+easylocalgame = { module = "com.github.grasski:EasyLocalGame", version.ref = "easylocalgame" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
