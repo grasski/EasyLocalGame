@@ -37,7 +37,6 @@ abstract class ServerViewmodelTemplate(
     val serverManager: ServerManager by lazy {
         ServerManager(connectionsClient, this::clientAction)
     }
-
 }
 
 
@@ -86,7 +85,7 @@ class ServerManager(
 
     private fun clientConnected(endpointID: String){
         if (_serverState.value.connectedClients.size >= serverConfiguration.maximumConnections){
-            Log.e("ServerManager.kt", "Reached maximum connections!")
+            Log.i("ServerManager.kt", "Reached maximum connections!")
 
             val payload = toServerPayload(ServerPayloadType.ROOM_IS_FULL, null)
             sendPayload(endpointID, payload)
@@ -133,13 +132,13 @@ class ServerManager(
 
         connectionsClient.startAdvertising(serverConfiguration.serverAsPlayerName, packageName, connectionLifecycleCallback, advertisingOptions)
             .addOnSuccessListener {
-                Log.e("ServerManager.kt", "SERVER ADVERTISING READY")
+                Log.i("ServerManager.kt", "SERVER ADVERTISING READY")
                 _serverState.update { it.copy(
                     serverStatus = ServerStatusEnum.ADVERTISING
                 ) }
             }
             .addOnFailureListener {
-                Log.e("ServerManager.kt", "SERVER ADVERTISING FAILURE")
+                Log.e("ServerManager.kt", "SERVER ADVERTISING FAILED")
                 _serverState.update { it.copy(
                     serverStatus = ServerStatusEnum.ADVERTISING_FAILED
                 ) }
@@ -171,14 +170,14 @@ class ServerManager(
 
         override fun onDisconnected(endpointId: String) {
             clientDisconnected(endpointId)
-            Log.e("ServerManager.kt", "SERVER: $endpointId disconnected")
+            Log.i("ServerManager.kt", "SERVER: $endpointId disconnected")
         }
     }
 
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             try {
-                val result: Pair<ClientPayloadType, Any?> = fromClientPayload(payload, null)
+                val result = fromClientPayload<ClientPayloadType, Any>(payload, null)
 
                 val clientPayloadType = result.first
                 when(clientPayloadType){

@@ -40,7 +40,6 @@ abstract class PlayerViewmodelTemplate(
     val clientManager: ClientManager by lazy {
         ClientManager(connectionsClient, this::serverAction)
     }
-//    val clientManager = ClientManager(connectionsClient, this::serverAction)
 }
 
 
@@ -103,14 +102,14 @@ class ClientManager(
 
         connectionsClient.startDiscovery(packageName, endpointDiscoveryCallback(nickname), discoveryOptions)
             .addOnSuccessListener {
-                Log.e("ClientManager.kt", "CLIENT DISCOVERY READY")
+                Log.i("ClientManager.kt", "CLIENT DISCOVERY READY")
                 _clientState.update { it.copy(
                     connectionStatus = ConnectionStatusEnum.CONNECTING
                 ) }
             }
             .addOnFailureListener {
                 Log.e("ClientManager.kt", "CLIENT DISCOVERY FAILURE " + it.message)
-                _clientState.update { it.copy(
+                _clientState.update { state -> state.copy(
                     connectionStatus = ConnectionStatusEnum.CONNECTING_FAILED
                 ) }
             }
@@ -119,14 +118,14 @@ class ClientManager(
     private val endpointDiscoveryCallback: (String) -> EndpointDiscoveryCallback = { nickname ->
         object : EndpointDiscoveryCallback() {
             override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-                Log.e("ClientManager.kt", "CLIENT $nickname is requesting connection on: ${info.endpointName} + $endpointId")
+                Log.i("ClientManager.kt", "CLIENT $nickname is requesting connection on: ${info.endpointName} + $endpointId")
 
                 connectionsClient.requestConnection(
                     nickname,
                     endpointId,
                     connectionLifecycleCallback
                 ).addOnSuccessListener {
-                    Log.e("ClientManager.kt", "CLIENT Successfully requested a connection")
+                    Log.i("ClientManager.kt", "CLIENT Successfully requested a connection")
                 }.addOnFailureListener {
                     Log.e("ClientManager.kt", "CLIENT Failed to request the connection")
                     _clientState.update { it.copy(
@@ -139,7 +138,7 @@ class ClientManager(
                 _clientState.update { it.copy(
                     connectionStatus = ConnectionStatusEnum.ENDPOINT_LOST
                 ) }
-                Log.e("ClientManager.kt", "CLIENT onEndpointLost " + endpointId)
+                Log.i("ClientManager.kt", "CLIENT onEndpointLost $endpointId")
             }
         }
     }

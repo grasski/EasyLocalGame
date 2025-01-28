@@ -15,11 +15,9 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import kotlinx.serialization.Serializable
 import java.lang.reflect.Type
 
 
-@Serializable
 sealed class UiTexts{
     class StringResource(
         @StringRes val resId: Int,
@@ -59,14 +57,14 @@ sealed class UiTexts{
         return when(this){
             is ArrayResource -> stringArrayResource(resId).toList()
             else -> {
-                listOf<String>()}
+                listOf()}
         }
     }
     fun asArray(context: Context): List<String> {
         return when(this){
             is ArrayResource -> context.resources.getStringArray(resId).toList()
             else -> {
-                listOf<String>()}
+                listOf()}
         }
     }
 }

@@ -67,5 +67,5 @@ dependencies {
     implementation(libs.google.nearby)
 
     implementation(libs.google.gson)
-    implementation(libs.kotlinx.serialization)
+//    implementation(libs.kotlinx.serialization)
 }

@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
+
 /**
 * Use this object for serializing and deserializing data.
 *
@@ -62,7 +63,7 @@ fun <T> toServerPayload(payloadType: String, data: T): Payload {
  * val result3: Pair<ServerPayloadType, NeedAdapter?> = fromServerPayload(serverPayload, null)
  * ```
  */
-inline fun <reified R, T> fromServerPayload(payload: Payload, typeAdapters: Map<Type, Any>?): Pair<R, T?> {
+inline fun <reified R, reified T> fromServerPayload(payload: Payload, typeAdapters: Map<Type, Any>?): Pair<R, T?> {
     val gson = gsonBuilder.apply {
         typeAdapters?.forEach { (t, a) ->
             this.registerTypeAdapter(t, a)
@@ -81,8 +82,13 @@ fun <T> toClientPayload(payloadType: ClientPayloadType, data: T?): Payload {
     val json = gson.toJson(Pair(payloadType, data))
     return Payload.fromBytes(json.toByteArray(Charsets.UTF_8))
 }
-fun <T> toClientPayload(payloadType: String, data: T?): Payload {
-    val gson = gsonBuilder.create()
+fun <T> toClientPayload(payloadType: String, data: T?, typeAdapters: Map<Type, Any>?=null): Payload {
+//    val gson = gsonBuilder.create()
+    val gson = gsonBuilder.apply {
+        typeAdapters?.forEach { (t, a) ->
+            this.registerTypeAdapter(t, a)
+        }
+    }.create()
 
     val json = gson.toJson(Pair(payloadType, data))
     return Payload.fromBytes(json.toByteArray(Charsets.UTF_8))
@@ -109,7 +115,7 @@ fun <T> toClientPayload(payloadType: String, data: T?): Payload {
  * val result3: Pair<ClientPayloadType, NeedAdapter?> = fromClientPayload(clientPayload, null)
  * ```
  */
-inline fun <reified R, T> fromClientPayload(payload: Payload, typeAdapters: Map<Type, Any>?): Pair<R, T?> {
+inline fun <reified R, reified T> fromClientPayload(payload: Payload, typeAdapters: Map<Type, Any>?): Pair<R, T?> {
     val gson = gsonBuilder.apply {
         typeAdapters?.forEach { (t, a) ->
             this.registerTypeAdapter(t, a)

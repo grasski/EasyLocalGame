@@ -6,6 +6,7 @@ enum class ClientPayloadType {
     ACTION_DISCONNECTED,
 }
 
+
 enum class ServerPayloadType {
     CLIENT_CONNECTED,
     ROOM_IS_FULL,
