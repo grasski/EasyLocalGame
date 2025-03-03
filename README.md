@@ -208,11 +208,33 @@ class PlayerViewModel @Inject constructor(
     // Your ViewModel logic.
 }
 ```
+As a client, you can connect to the server like this:
 ```kotlin
 val playerViewModel: PlayerViewModel = hiltViewModel()
 val playerState by playerViewModel.playerState.collectAsStateWithLifecycle()
 val playerActionsState by playerViewModel.playerActionsState.collectAsStateWithLifecycle()
 val clientState by playerViewModel.clientManager.clientState.collectAsStateWithLifecycle()
+
+val context = LocalContext.current
+LaunchedEffect(Unit) {
+    playerViewModel.clientManager.connect(context.packageName, PlayerConnectionState(nickname, avatarId))
+}
+
+// Your view logic.
+```
+
+Or start a server like this:
+```kotlin
+val serverViewModel = if (serverScreen.serverType == ServerType.IS_TABLE.toString()){
+    hiltViewModel<ServerOwnerViewModel>()
+} else {
+    hiltViewModel<ServerPlayerViewModel>()
+}
+val serverState by serverViewModel.serverManager.serverState.collectAsStateWithLifecycle()
+val context = LocalContext.current
+LaunchedEffect(Unit) {
+    serverViewModel.serverManager.startServer(context.packageName, ServerConfiguration(serverType=ServerType.valueOf(serverScreen.serverType), maximumConnections=10))
+}
 
 // Your view logic.
 ```
