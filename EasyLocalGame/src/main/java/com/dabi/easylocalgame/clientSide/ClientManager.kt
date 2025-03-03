@@ -43,6 +43,9 @@ abstract class PlayerViewmodelTemplate(
 }
 
 
+/**
+ * Actions used by server to communicate with client.
+ */
 sealed class ServerAction{
     data class UpdateGameState(val payload: Payload): ServerAction()
     data class UpdatePlayerState(val payload: Payload): ServerAction()

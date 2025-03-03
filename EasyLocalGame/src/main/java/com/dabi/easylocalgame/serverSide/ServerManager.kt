@@ -39,7 +39,9 @@ abstract class ServerViewmodelTemplate(
     }
 }
 
-
+/**
+ * Actions used by client to communicate with server.
+ */
 sealed class ClientAction{
     data class EstablishConnection(val endpointID: String, val payload: Payload): ClientAction()
     data class Disconnect(val endpointID: String): ClientAction()
