@@ -7,7 +7,7 @@ import com.dabi.easylocalgame.clientSide.data.ConnectionStatusEnum
 import com.dabi.easylocalgame.clientSide.data.IPlayerConnectionState
 import com.dabi.easylocalgame.payloadUtils.data.ClientPayloadType
 import com.dabi.easylocalgame.payloadUtils.data.ServerPayloadType
-import com.dabi.easylocalgame.payloadUtils.fromServerPayload
+import com.dabi.easylocalgame.payloadUtils.fromPayload
 import com.dabi.easylocalgame.payloadUtils.toClientPayload
 import com.dabi.easylocalgame.serverSide.data.ServerType
 import com.google.android.gms.nearby.connection.ConnectionInfo
@@ -186,7 +186,7 @@ class ClientManager(
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             try {
-                val result: Pair<ServerPayloadType, Any?> = fromServerPayload(payload, null)
+                val result: Pair<ServerPayloadType, Any?> = fromPayload(payload, null)
 
                 val serverPayloadType = result.first
                 val data = result.second

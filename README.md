@@ -101,9 +101,9 @@ override fun clientAction(clientAction: ClientAction) {
 
 For `ClientAction.PayloadAction`, developers can define their own action types specific to their game. For example, in a poker game, actions like `ACTION_CHECK`, `ACTION_CALL`, and `ACTION_RAISE` are used, but other games can define their own logic.
 
-Similarly, developers can define their own custom server-side actions using `ServerAction.PayloadAction` and their own `ServerPayloadType`. This allows for flexibility in defining game-specific events on both the client and server.
+Similarly, developers can define their own custom server-side actions using `ServerAction.PayloadAction` and their own `OwnServerPayloadType`. This allows for flexibility in defining game-specific events on both the client and server.
 
-Example:
+Example PayloadTypes:
 
 ```kotlin
 @Keep
@@ -134,15 +134,15 @@ enum class ServerPayloadType {
 }
 ```
 
-Additionally, sending and receiving messages is facilitated by helper functions in `payloadUtils.kt`. The functions `toClientPayload` and `fromClientPayload` or  `toServerPayload` and `fromServerPayload` help serialize and deserialize data:
+Additionally, sending and receiving messages is facilitated by helper functions in `payloadUtils.kt`. The functions `toClientPayload` and `toServerPayload` are default for Library PayloadTypes and function `toPayload` can be used for own data types converted to String type. Function `fromPayload` help deserialize data to wanted data types of both Pair values: payloadType and message data.
 
 ```kotlin
 // Client side
-val clientPayload = toClientPayload(ClientPayloadType.ESTABLISH_CONNECTION, playerConnectionState)
+val clientPayload = toClientPayload(ClientPayloadType.ESTABLISH_CONNECTION, data=playerConnectionState)
 clientManager.sendPayload(clientPayload)
 
 // Server side
-val result: Pair<ClientPayloadType, PlayerConnectionState?> = fromClientPayload(payload=payloadData, typeAdapters=null)
+val result: Pair<ClientPayloadType, PlayerConnectionState?> = fromPayload(payload=payloadData, typeAdapters=null)
 ```
 or 
 ```kotlin
@@ -151,9 +151,17 @@ val serverPayloadType = toServerPayload(ServerPayloadType.UPDATE_PLAYER_STATE, p
 serverManager.sendPayload(playerEndpointId, serverPayloadType)
 
 // Client side
-val result: Pair<ServerPayloadType, PlayerState?> = fromServerPayload(payload=payloadData, typeAdapters=null)
+val result: Pair<ServerPayloadType, PlayerState?> = fromPayload(payload=payloadData, typeAdapters=null)
 ```
+or general payloadType
+```kotlin
+// For example on Client side
+val payloadData = toPayload(MyOwnClientPayloadType.ACTION_READY.toString(), data=null)
+clientManager.sendPayload(payloadData)
 
+// Server side
+val result: Pair<String or MyOwnClientPayloadType if you know the type, Any?> = fromPayload(payload=payloadData, typeAdapters=null)
+```
 If a custom type requires a `TypeAdapter`, it should be registered with `gsonBuilder` before serialization or deserialization.
 
 ### 🔹 Client

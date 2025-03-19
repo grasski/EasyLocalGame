@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.dabi.easylocalgame.payloadUtils.data.ClientPayloadType
 import com.dabi.easylocalgame.payloadUtils.data.ServerPayloadType
-import com.dabi.easylocalgame.payloadUtils.fromClientPayload
+import com.dabi.easylocalgame.payloadUtils.fromPayload
 import com.dabi.easylocalgame.payloadUtils.toServerPayload
 import com.dabi.easylocalgame.serverSide.data.ServerConfiguration
 import com.dabi.easylocalgame.serverSide.data.ServerState
@@ -179,7 +179,7 @@ class ServerManager(
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             try {
-                val result = fromClientPayload<ClientPayloadType, Any>(payload, null)
+                val result = fromPayload<ClientPayloadType, Any>(payload, null)
 
                 val clientPayloadType = result.first
                 when(clientPayloadType){
