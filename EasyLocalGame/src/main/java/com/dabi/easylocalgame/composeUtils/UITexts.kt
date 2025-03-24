@@ -1,4 +1,4 @@
-package com.dabi.easylocalgame.textUtils
+package com.dabi.easylocalgame.composeUtils
 
 import android.content.Context
 import androidx.annotation.ArrayRes

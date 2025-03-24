@@ -2,8 +2,8 @@ package com.dabi.easylocalgame.payloadUtils
 
 import com.dabi.easylocalgame.payloadUtils.data.ClientPayloadType
 import com.dabi.easylocalgame.payloadUtils.data.ServerPayloadType
-import com.dabi.easylocalgame.textUtils.UiTexts
-import com.dabi.easylocalgame.textUtils.UiTextsAdapter
+import com.dabi.easylocalgame.composeUtils.UiTexts
+import com.dabi.easylocalgame.composeUtils.UiTextsAdapter
 import com.google.android.gms.nearby.connection.Payload
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken

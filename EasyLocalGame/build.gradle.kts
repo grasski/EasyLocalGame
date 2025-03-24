@@ -63,9 +63,12 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // Permissions
+    implementation(libs.google.permissions)
+
     // NearbyConnectionAPI
     implementation(libs.google.nearby)
 
+    // GSON
     implementation(libs.google.gson)
-//    implementation(libs.kotlinx.serialization)
 }
