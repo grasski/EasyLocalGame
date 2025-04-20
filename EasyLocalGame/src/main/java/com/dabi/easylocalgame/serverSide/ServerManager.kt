@@ -65,7 +65,8 @@ class ServerManager(
 
         this.serverConfiguration = serverConfiguration
         _serverState.update { it.copy(
-            serverType = this.serverConfiguration.serverType
+            serverType = this.serverConfiguration.serverType,
+            serverStatus = ServerStatusEnum.NONE
         ) }
         startAdvertising(packageName)
     }

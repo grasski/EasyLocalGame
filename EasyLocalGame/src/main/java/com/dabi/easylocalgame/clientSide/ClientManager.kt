@@ -103,6 +103,9 @@ class ClientManager(
         val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
         connectionsClient.stopDiscovery()
 
+        _clientState.update { it.copy(
+            connectionStatus = ConnectionStatusEnum.NONE
+        ) }
         connectionsClient.startDiscovery(packageName, endpointDiscoveryCallback(nickname), discoveryOptions)
             .addOnSuccessListener {
                 Log.i("ClientManager.kt", "CLIENT DISCOVERY READY")
